@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Header from "./(layoutsComp)/Header";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import theme from "@/theme";
+import { Roboto } from "next/font/google";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
+  //only download the characters we need for better performance
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  //is related to font-display when font is loading, swap is good for performance(prevent Flash of Invisible Text) and very fast Flash of Unstyled Text
+  display: "swap",
+  variable: "--font-roboto",
 });
 
 export const metadata: Metadata = {
@@ -24,8 +26,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+      <body className={`${roboto.variable}`}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Header />
+          {children}
+          {/* footer */}
+          <footer>
+            <p>&copy; {new Date().getFullYear()} SHOP APP</p>
+          </footer>
+        </ThemeProvider>
       </body>
     </html>
   );
