@@ -15,20 +15,21 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
-// import { useOrdersItem } from "../(store)/useOrdersStores";
+import { useOrdersItem } from "../(store)/useOrdersStores";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddIcon from "@mui/icons-material/Add";
 import HomeIcon from "@mui/icons-material/Home";
-// import { useProductsItem } from "../(store)/useProductsStore";
+import { useProductsItem } from "../(store)/useProductsStore";
 import { JSX, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-// import { useSnackbar } from "../SnackbarProvider";
-// import { SnackbarSeverityEnum } from "../types/types";
+
+import { SnackbarSeverityEnum } from "../types/types";
+import { useSnackbar } from "../(store)/useSnackbarStore";
 
 /**
  * Header Component
@@ -53,14 +54,14 @@ import Link from "next/link";
  * @returns {JSX.Element} Rendered header component
  */
 const Header = (): JSX.Element => {
-  // const { showSnackbar } = useSnackbar();
+  const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
 
-  // const { orders } = useOrdersItem();
-  // const { products, setFilteredProducts } = useProductsItem();
+  const { orders } = useOrdersItem();
+  const { products, setFilteredProducts } = useProductsItem();
 
   /** Determines if current route is within admin section */
   const isAdmin = pathname.startsWith("/admin");
@@ -85,15 +86,15 @@ const Header = (): JSX.Element => {
   /**
    * Navigates user to shopping cart page
    */
-  // const handleNavigateToCart = useCallback(() => {
-  //   if (!session) {
-  //     return showSnackbar(
-  //       "please authenticate to proceed to shopping cart",
-  //       SnackbarSeverityEnum.Error
-  //     );
-  //   }
-  //   router.push("/cart");
-  // }, [router, session]);
+  const handleNavigateToCart = useCallback(() => {
+    if (!session) {
+      return showSnackbar(
+        "please authenticate to proceed to shopping cart",
+        SnackbarSeverityEnum.Error
+      );
+    }
+    router.push("/cart");
+  }, [router, session, showSnackbar]);
 
   /**
    * Signs out the current user and redirects to home
@@ -108,34 +109,31 @@ const Header = (): JSX.Element => {
    *
    * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event
    */
-  // const handleSearchProducts = useCallback(
-  //   (e: React.ChangeEvent<HTMLInputElement>) => {
-  //     const query = e.target.value.toLowerCase().trim();
+  const handleSearchProducts = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const query = e.target.value.toLowerCase().trim();
 
-  //     if (!query) {
-  //       setFilteredProducts(products);
-  //       return;
-  //     }
+      if (!query) {
+        setFilteredProducts(products);
+        return;
+      }
 
-  //     const filtered = products.filter((product) => {
-  //       const nameMatch = product.name.toLowerCase().includes(query);
-  //       const descriptionMatch = product.description
-  //         .toLowerCase()
-  //         .includes(query);
-  //       return nameMatch || descriptionMatch;
-  //     });
+      const filtered = products.filter((product) => {
+        const nameMatch = product.name.toLowerCase().includes(query);
+        const descriptionMatch = product.description
+          .toLowerCase()
+          .includes(query);
+        return nameMatch || descriptionMatch;
+      });
 
-  //     setFilteredProducts(filtered);
-  //   },
-  //   [products, setFilteredProducts]
-  // );
+      setFilteredProducts(filtered);
+    },
+    [products, setFilteredProducts]
+  );
 
   /**
    * Renders the admin-specific header layout
    */
-
-  console.log(session);
-
   const renderAdminHeader = (): JSX.Element => (
     <Box
       sx={{
@@ -219,7 +217,7 @@ const Header = (): JSX.Element => {
         }}
         placeholder="Search for products..."
         inputProps={{ "aria-label": "search products" }}
-        // onChange={handleSearchProducts}
+        onChange={handleSearchProducts}
       />
     </Paper>
   );
@@ -240,6 +238,7 @@ const Header = (): JSX.Element => {
         py: 1,
         borderRadius: 2,
         borderWidth: 2,
+        color: "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
         "&:hover": {
           borderWidth: 2,
           backgroundColor: alpha(theme.palette.primary.main, 0.08),
@@ -263,7 +262,7 @@ const Header = (): JSX.Element => {
     >
       {/* Shopping Cart Button */}
       <IconButton
-        // onClick={handleNavigateToCart}
+        onClick={handleNavigateToCart}
         color="primary"
         aria-label="shopping cart"
         sx={{
@@ -276,7 +275,7 @@ const Header = (): JSX.Element => {
         }}
       >
         <Badge
-          // badgeContent={orders.length}
+          badgeContent={orders.length}
           color="error"
           sx={{
             "& .MuiBadge-badge": {
@@ -310,7 +309,8 @@ const Header = (): JSX.Element => {
             px: 3,
             py: 1,
             borderRadius: 2,
-            boxShadow: 2,
+            background: "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
+            boxShadow: "0 3px 15px rgba(102, 126, 234, 0.4)",
             "&:hover": {
               boxShadow: 4,
             },
