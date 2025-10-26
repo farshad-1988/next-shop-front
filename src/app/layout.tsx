@@ -4,6 +4,7 @@ import Header from "./(layoutsComp)/Header";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import { Roboto } from "next/font/google";
+import Footer from "./(layoutsComp)/Footer";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -31,10 +32,7 @@ export default function RootLayout({
           <CssBaseline />
           <Header />
           {children}
-          {/* footer */}
-          <footer>
-            <p>&copy; {new Date().getFullYear()} SHOP APP</p>
-          </footer>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
