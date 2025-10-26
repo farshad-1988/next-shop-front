@@ -261,31 +261,35 @@ const Header = (): JSX.Element => {
       }}
     >
       {/* Shopping Cart Button */}
-      <IconButton
-        onClick={handleNavigateToCart}
-        color="primary"
-        aria-label="shopping cart"
-        sx={{
-          borderRadius: 2,
-          transition: "all 0.2s ease",
-          "&:hover": {
-            backgroundColor: alpha(theme.palette.primary.main, 0.12),
-            transform: "scale(1.05)",
-          },
-        }}
-      >
-        <Badge
-          badgeContent={orders.length}
-          color="error"
+      {session?.user.role === "admin" ? (
+        <Link href={"/admin"}>Panel</Link>
+      ) : (
+        <IconButton
+          onClick={handleNavigateToCart}
+          color="primary"
+          aria-label="shopping cart"
           sx={{
-            "& .MuiBadge-badge": {
-              fontWeight: 700,
+            borderRadius: 2,
+            transition: "all 0.2s ease",
+            "&:hover": {
+              backgroundColor: alpha(theme.palette.primary.main, 0.12),
+              transform: "scale(1.05)",
             },
           }}
         >
-          <ShoppingCartIcon />
-        </Badge>
-      </IconButton>
+          <Badge
+            badgeContent={orders.length}
+            color="error"
+            sx={{
+              "& .MuiBadge-badge": {
+                fontWeight: 700,
+              },
+            }}
+          >
+            <ShoppingCartIcon />
+          </Badge>
+        </IconButton>
+      )}
 
       {/* Authentication Button */}
       {status === "loading" ? (
