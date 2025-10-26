@@ -118,7 +118,8 @@ const Header = (): JSX.Element => {
           borderWidth: 2,
           "&:hover": {
             borderWidth: 2,
-            backgroundColor: alpha(theme.palette.error.main, 0.08),
+            background: "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
+            boxShadow: "0 3px 15px rgba(102, 126, 234, 0.4)",
           },
         }}
       >
@@ -179,6 +180,7 @@ const Header = (): JSX.Element => {
         py: 1,
         borderRadius: 2,
         borderWidth: 2,
+        color: "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
         "&:hover": {
           borderWidth: 2,
           backgroundColor: alpha(theme.palette.primary.main, 0.08),
@@ -239,7 +241,8 @@ const Header = (): JSX.Element => {
           px: 3,
           py: 1,
           borderRadius: 2,
-          boxShadow: 2,
+          background: "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
+          boxShadow: "0 3px 15px rgba(102, 126, 234, 0.4)",
           "&:hover": {
             boxShadow: 4,
           },

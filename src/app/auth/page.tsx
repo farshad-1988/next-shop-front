@@ -410,11 +410,11 @@ export default function AuthPage() {
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          minHeight: "100vh",
+          // minHeight: "100vh",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+          // background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
           py: 4,
         }}
       >
