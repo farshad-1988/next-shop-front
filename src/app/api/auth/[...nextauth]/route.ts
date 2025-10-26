@@ -1,4 +1,4 @@
-import { User, UserRole } from "@app/types/types";
+import { User, UserRole } from "@/app/types/types";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
