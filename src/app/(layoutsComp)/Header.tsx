@@ -29,7 +29,7 @@ import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 import { SnackbarSeverityEnum } from "../types/types";
-import { useSnackbar } from "../(customMuiComp)/SnackbarProvider";
+import { useSnackbar } from "../(store)/useSnackbarStore";
 
 /**
  * Header Component
