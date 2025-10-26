@@ -5,7 +5,7 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import { Roboto } from "next/font/google";
 import Footer from "./(layoutsComp)/Footer";
-
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
   //only download the characters we need for better performance
@@ -28,12 +28,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${roboto.variable}`}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <Header />
-          {children}
-          <Footer />
-        </ThemeProvider>
+        <AppRouterCacheProvider options={{ key: "css" }}>
+          <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Header />
+            {children}
+            <Footer />
+          </ThemeProvider>
+        </AppRouterCacheProvider>
       </body>
     </html>
   );
