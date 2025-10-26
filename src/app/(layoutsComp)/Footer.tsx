@@ -3,11 +3,19 @@
  *
  */
 
+import { CenteredCard } from "../(customMuiComp)/CenteredCard";
+
 const Footer = () => {
   return (
-    <footer>
+    <CenteredCard
+      sx={{
+        background: "linear-gradient(45deg, #667eea 30%, #764ba2 90%)",
+        boxShadow: "0 3px 15px rgba(102, 126, 234, 0.4)",
+        height: "10%",
+      }}
+    >
       <p>&copy; {new Date().getFullYear()} SHOP APP</p>
-    </footer>
+    </CenteredCard>
   );
 };
 

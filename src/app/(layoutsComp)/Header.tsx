@@ -15,15 +15,20 @@ import {
   alpha,
   useTheme,
 } from "@mui/material";
+// import { useOrdersItem } from "../(store)/useOrdersStores";
 import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LoginIcon from "@mui/icons-material/Login";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddIcon from "@mui/icons-material/Add";
 import HomeIcon from "@mui/icons-material/Home";
+// import { useProductsItem } from "../(store)/useProductsStore";
 import { JSX, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+// import { useSnackbar } from "../SnackbarProvider";
+// import { SnackbarSeverityEnum } from "../types/types";
 
 /**
  * Header Component
@@ -48,9 +53,14 @@ import Link from "next/link";
  * @returns {JSX.Element} Rendered header component
  */
 const Header = (): JSX.Element => {
+  // const { showSnackbar } = useSnackbar();
   const theme = useTheme();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+
+  // const { orders } = useOrdersItem();
+  // const { products, setFilteredProducts } = useProductsItem();
 
   /** Determines if current route is within admin section */
   const isAdmin = pathname.startsWith("/admin");
@@ -73,8 +83,59 @@ const Header = (): JSX.Element => {
   }, [router]);
 
   /**
+   * Navigates user to shopping cart page
+   */
+  // const handleNavigateToCart = useCallback(() => {
+  //   if (!session) {
+  //     return showSnackbar(
+  //       "please authenticate to proceed to shopping cart",
+  //       SnackbarSeverityEnum.Error
+  //     );
+  //   }
+  //   router.push("/cart");
+  // }, [router, session]);
+
+  /**
+   * Signs out the current user and redirects to home
+   */
+  const handleLogout = useCallback(async () => {
+    await signOut({ callbackUrl: "/" });
+  }, []);
+
+  /**
+   * Filters products based on search query
+   * Searches through product names and descriptions
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event
+   */
+  // const handleSearchProducts = useCallback(
+  //   (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const query = e.target.value.toLowerCase().trim();
+
+  //     if (!query) {
+  //       setFilteredProducts(products);
+  //       return;
+  //     }
+
+  //     const filtered = products.filter((product) => {
+  //       const nameMatch = product.name.toLowerCase().includes(query);
+  //       const descriptionMatch = product.description
+  //         .toLowerCase()
+  //         .includes(query);
+  //       return nameMatch || descriptionMatch;
+  //     });
+
+  //     setFilteredProducts(filtered);
+  //   },
+  //   [products, setFilteredProducts]
+  // );
+
+  /**
    * Renders the admin-specific header layout
    */
+
+  console.log(session);
+
   const renderAdminHeader = (): JSX.Element => (
     <Box
       sx={{
@@ -107,7 +168,7 @@ const Header = (): JSX.Element => {
       <Button
         variant="outlined"
         endIcon={<LogoutIcon />}
-        // onClick={handleLogout}
+        onClick={handleLogout}
         color="error"
         sx={{
           textTransform: "none",
@@ -228,25 +289,57 @@ const Header = (): JSX.Element => {
       </IconButton>
 
       {/* Authentication Button */}
-
-      <Button
-        onClick={handleLogin}
-        variant="contained"
-        endIcon={<LoginIcon />}
-        sx={{
-          textTransform: "none",
-          fontWeight: 600,
-          px: 3,
-          py: 1,
-          borderRadius: 2,
-          boxShadow: 2,
-          "&:hover": {
-            boxShadow: 4,
-          },
-        }}
-      >
-        Login
-      </Button>
+      {status === "loading" ? (
+        <Typography
+          variant="body2"
+          sx={{
+            color: "text.secondary",
+            fontStyle: "italic",
+          }}
+        >
+          Loading...
+        </Typography>
+      ) : !session ? (
+        <Button
+          onClick={handleLogin}
+          variant="contained"
+          endIcon={<LoginIcon />}
+          sx={{
+            textTransform: "none",
+            fontWeight: 600,
+            px: 3,
+            py: 1,
+            borderRadius: 2,
+            boxShadow: 2,
+            "&:hover": {
+              boxShadow: 4,
+            },
+          }}
+        >
+          Login
+        </Button>
+      ) : (
+        <Button
+          onClick={handleLogout}
+          variant="outlined"
+          endIcon={<LogoutIcon />}
+          color="error"
+          sx={{
+            textTransform: "none",
+            fontWeight: 600,
+            px: 3,
+            py: 1,
+            borderRadius: 2,
+            borderWidth: 2,
+            "&:hover": {
+              borderWidth: 2,
+              backgroundColor: alpha(theme.palette.error.main, 0.08),
+            },
+          }}
+        >
+          Logout
+        </Button>
+      )}
     </Box>
   );
 
