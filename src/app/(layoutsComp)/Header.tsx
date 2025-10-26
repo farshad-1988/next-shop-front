@@ -27,8 +27,9 @@ import { JSX, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useSnackbar } from "../SnackbarProvider";
+
 import { SnackbarSeverityEnum } from "../types/types";
+import { useSnackbar } from "../(customMuiComp)/SnackbarProvider";
 
 /**
  * Header Component
@@ -93,7 +94,7 @@ const Header = (): JSX.Element => {
       );
     }
     router.push("/cart");
-  }, [router, session]);
+  }, [router, session, showSnackbar]);
 
   /**
    * Signs out the current user and redirects to home
