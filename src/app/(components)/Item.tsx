@@ -29,7 +29,7 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
           }}
         >
           <AddProductComp item={item} />
-          <Typography variant={"h6"}>${item.price.toFixed(2)}</Typography>
+          <Typography variant={"h6"}>${(+item.price).toFixed(2)}</Typography>
         </Card>
       </Card>
     </Box>

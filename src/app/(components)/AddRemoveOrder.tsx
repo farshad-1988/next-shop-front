@@ -1,11 +1,12 @@
 import { Button, Typography } from "@mui/material";
 import { JSX } from "react";
-import { CenteredCard } from "./CustomMuiComp";
+
 import { useOrdersItem } from "../(store)/useOrdersStores";
 import { Item } from "../types/types";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useUserStore } from "../(store)/useUserStore";
+import { CenteredCard } from "../(customMuiComp)/CenteredCard";
 
 /**
  *add or remove products from user's cart
