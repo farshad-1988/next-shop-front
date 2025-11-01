@@ -2,20 +2,25 @@
 
 import { Alert, Grid, Snackbar } from "@mui/material";
 import React from "react";
-import ItemComp from "./ItemComp";
+
+import ItemComp from "./Item";
+
 import { useProductsItem } from "../(store)/useProductsStore";
 import { useQuery } from "@tanstack/react-query";
 import { useOrdersItem } from "../(store)/useOrdersStores";
 import Loading from "./Loading";
 import Grow from "@mui/material/Grow";
 import { useSession } from "next-auth/react";
+
 import { useUserStore } from "../(store)/useUserStore";
 
 const ShowItems = () => {
   const { data: session, status } = useSession();
   const { setProducts, filteredProducts, setFilteredProducts } =
     useProductsItem();
+
   const { setUser } = useUserStore();
+
   const { setOrders } = useOrdersItem();
   const uid = session?.user?.id;
 
@@ -45,6 +50,7 @@ const ShowItems = () => {
     queryFn: async () => {
       const res = await fetch(`http://localhost:5000/api/users/${uid}`);
       const userData = await res.json();
+
       setUser(userData);
       setOrders(userData.orders);
       return userData.orders;

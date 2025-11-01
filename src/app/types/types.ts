@@ -34,7 +34,7 @@ export type ProductsItemStore = {
 export type UserItemStore = {
   // loading: boolean;
   // error: string | null;
-  user: User;
+  user: User | null;
   setUser: (user: User) => void;
 };
 
