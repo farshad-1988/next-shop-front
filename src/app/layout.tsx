@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Header from "./(layoutsComp)/Header";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, Grid, ThemeProvider } from "@mui/material";
 import theme from "@/theme";
 import { Roboto } from "next/font/google";
 import Footer from "./(layoutsComp)/Footer";
@@ -34,7 +34,7 @@ export default function RootLayout({
             <ThemeProvider theme={theme}>
               <CssBaseline />
               <Header />
-              {children}
+              <Grid sx={{ minHeight: "100vh" }}>{children}</Grid>
               <Footer />
             </ThemeProvider>
           </AppRouterCacheProvider>
