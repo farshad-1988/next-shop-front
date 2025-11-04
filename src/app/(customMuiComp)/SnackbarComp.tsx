@@ -1,3 +1,5 @@
+"use client";
+
 import { Snackbar, Alert, Grow } from "@mui/material";
 import { useSnackbar } from "../(store)/useSnackbarStore";
 const SnackbarComp = () => {

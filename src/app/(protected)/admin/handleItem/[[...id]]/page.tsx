@@ -78,8 +78,8 @@ export default function HandleItemPage({
       if (!session || session.user.role !== UserRole.ADMIN)
         throw new Error("you are not authorized");
       const endpoint = id
-        ? `http://localhost:5000/api/products/${id}`
-        : "http://localhost:5000/api/products";
+        ? `/api/products/${id}`
+        : "/api/products";
 
       const method = id ? "PUT" : "POST";
 
@@ -115,7 +115,7 @@ export default function HandleItemPage({
     queryKey: ["item", id],
     queryFn: async () => {
       if (!id) return null;
-      const res = await fetch(`http://localhost:5000/api/products/${id}`);
+      const res = await fetch(`/api/products/${id}`);
       if (!res.ok) {
         throw new Error("Failed to fetch product");
       }

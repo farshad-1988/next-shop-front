@@ -10,7 +10,7 @@ const EditProducts = () => {
   useQuery({
     queryKey: ["products"],
     queryFn: async () => {
-      const res = await fetch("http://localhost:5000/api/products");
+      const res = await fetch("/api/products");
       const data = await res.json();
       setProducts(data);
       setFilteredProducts(data);

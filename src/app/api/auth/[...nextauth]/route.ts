@@ -1,9 +1,7 @@
 import { User, UserRole } from "@/app/types/types";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-const JSON_SERVER_URL =
-  process.env.JSON_SERVER_URL || "http://localhost:5000/api";
+import { readData } from "@/lib/data";
 
 interface DbUser extends User {
   password: string;
@@ -20,12 +18,12 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        // Fetch user by email
-        const res = await fetch(
-          `${JSON_SERVER_URL}/users?email=${credentials.email}`
+        // Fetch user by email from data file
+        const data = readData();
+        const users = data.users.filter(
+          (u) => u.email === credentials.email
         );
-        const users: DbUser[] = await res.json();
-        const user = users[0];
+        const user = users[0] as DbUser | undefined;
 
         // Validate user
         if (!user || user.password !== credentials.password) {

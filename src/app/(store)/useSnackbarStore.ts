@@ -1,10 +1,14 @@
 import { create } from "zustand";
 import { SnackbarSeverityEnum } from "@/app/types/types";
+import { ReactNode } from "react";
 type SnackbarState = {
   open: boolean;
   severity: SnackbarSeverityEnum;
-  message: string;
-  showSnackbar: (message: string, severity?: SnackbarSeverityEnum) => void;
+  message: string | ReactNode;
+  showSnackbar: (
+    message: string | ReactNode,
+    severity?: SnackbarSeverityEnum
+  ) => void;
   closeSnackbar: () => void;
 };
 
