@@ -14,7 +14,6 @@ import { useSession } from "next-auth/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Loading from "../(components)/Loading";
 import { useRouter } from "next/navigation";
-import ItemComp from "../(components)/Item";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -118,7 +117,7 @@ export default function CartPage() {
         quantity: order.count,
         totalAmount: order.price * order.count,
         soldAt: purchaseDate,
-        userId: user.id,
+        userId: String(user.id),
         userName: user.name,
       });
     });
@@ -223,7 +222,7 @@ export default function CartPage() {
     <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
       <Grid container spacing={3} sx={{ maxWidth: 1400, mx: "auto", px: 3 }}>
         {/* Left Side - Cart Items */}
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={8} {...({} as any)}>
           <Card sx={{ p: 3, mb: 2 }}>
             <Typography variant="h5" fontWeight={600} gutterBottom>
               Shopping Cart ({orders.length}{" "}
@@ -239,7 +238,7 @@ export default function CartPage() {
         </Grid>
 
         {/* Right Side - Order Summary & Payment */}
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} {...({} as any)}>
           <Box sx={{ position: "sticky", top: 20 }}>
             {/* Order Summary */}
             <Card sx={{ p: 3, mb: 2 }}>

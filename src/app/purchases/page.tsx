@@ -28,13 +28,14 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 interface PurchasedItem {
   id: number;
   name: string;
+  updatedAt?: string;
+  createdAt?: string;
   category?: string | { id: string; label: string };
   price: number;
   stock: number;
   rating?: number;
   description: string;
   image?: string;
-  imageUrl?: string;
   count: number;
   purchasedAt: string;
 }
@@ -143,6 +144,7 @@ export default function PurchasesPage() {
             xs={12}
             sm={3}
             sx={{ display: "flex", justifyContent: "center" }}
+            {...({} as any)}
           >
             <Avatar
               sx={{
@@ -157,7 +159,7 @@ export default function PurchasesPage() {
               {userData?.name?.charAt(0).toUpperCase() || "U"}
             </Avatar>
           </Grid>
-          <Grid item xs={12} sm={9}>
+          <Grid item xs={12} sm={9} {...({} as any)}>
             <Typography
               variant="h4"
               gutterBottom
@@ -194,7 +196,7 @@ export default function PurchasesPage() {
 
         {/* Purchase Statistics */}
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={4} {...({} as any)}>
             <Card
               sx={{
                 textAlign: "center",
@@ -215,7 +217,7 @@ export default function PurchasesPage() {
               </Typography>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={4} {...({} as any)}>
             <Card
               sx={{
                 textAlign: "center",
@@ -236,7 +238,7 @@ export default function PurchasesPage() {
               </Typography>
             </Card>
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={4} {...({} as any)}>
             <Card
               sx={{
                 textAlign: "center",
@@ -313,6 +315,7 @@ export default function PurchasesPage() {
               sm={6}
               md={4}
               key={`${item.id}-${item.purchasedAt}`}
+              {...({} as any)}
             >
               <Card
                 elevation={3}

@@ -1,16 +1,17 @@
+import { PurchasedItem } from "@/lib/data";
+
 export type Item = {
   id: number;
   name: string;
-  category: string;
+  category?: string | { id: string; label: string };
   price: number;
   stock: number;
-  rating: number;
+  rating?: number | undefined;
   description: string;
-  image: string;
+  image?: string | undefined;
 };
 
 export type CartItem = Item & { count: number };
-export type productItem = Item & { stock: number };
 export type CartItems = CartItem[];
 
 export type OrdersItemStore = {
@@ -24,12 +25,12 @@ export type OrdersItemStore = {
 export type ProductsItemStore = {
   // loading: boolean;
   // error: string | null;
-  products: productItem[];
-  filteredProducts: productItem[];
-  setProducts: (products: productItem[]) => void;
-  setFilteredProducts: (products: productItem[]) => void;
-  increaseProductsItem: (item: productItem) => void;
-  decreaseProductsItem: (item: productItem) => void;
+  products: Item[];
+  filteredProducts: Item[];
+  setProducts: (products: Item[]) => void;
+  setFilteredProducts: (products: Item[]) => void;
+  increaseProductsItem: (item: Item) => void;
+  decreaseProductsItem: (item: Item) => void;
 };
 export type UserItemStore = {
   // loading: boolean;
@@ -48,8 +49,9 @@ export interface User {
   email: string;
   name: string;
   createdAt?: string;
-  orders: CartItems[];
+  orders: CartItems[] | [];
   role: UserRole;
+  purchasedItems: PurchasedItem[] | [];
 }
 
 export interface AuthFormData {

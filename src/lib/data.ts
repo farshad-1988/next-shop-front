@@ -31,8 +31,8 @@ export interface User {
   name: string;
   password?: string;
   createdAt?: string;
-  orders: OrderItem[];
-  purchasedItems?: PurchasedItem[];
+  orders: OrderItem[] | [];
+  purchasedItems?: PurchasedItem[] | [];
   role: "admin" | "customer";
 }
 

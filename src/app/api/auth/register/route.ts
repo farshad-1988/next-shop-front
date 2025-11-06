@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AuthRequest, AuthResponse, User, UserRole } from "@/app/types/types";
+import { AuthRequest, AuthResponse, UserRole } from "@/app/types/types";
 import { readData, writeData, User as DbUserType } from "@/lib/data";
-
-interface DbUser extends User {
-  password: string;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +26,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new user
-    const userIds = data.users.map((u) => parseInt(u.id)).filter((id) => !isNaN(id));
+    const userIds = data.users
+      .map((u) => parseInt(u.id))
+      .filter((id) => !isNaN(id));
     const nextId = userIds.length > 0 ? Math.max(...userIds) + 1 : 1;
 
     const newUser: DbUserType = {
@@ -55,6 +53,7 @@ export async function POST(request: NextRequest) {
         name: newUser.name,
         orders: [],
         role: UserRole.CUSTOMER,
+        purchasedItems: [],
       },
     });
   } catch (error) {
