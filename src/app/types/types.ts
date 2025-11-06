@@ -25,6 +25,10 @@ export type OrdersItemStore = {
 export type ProductsItemStore = {
   // loading: boolean;
   // error: string | null;
+  pagination: boolean;
+  setPagination: (pagination: boolean) => void;
+  productSearch: string;
+  setProductSearch: (searchText: string) => void;
   products: Item[];
   filteredProducts: Item[];
   setProducts: (products: Item[]) => void;

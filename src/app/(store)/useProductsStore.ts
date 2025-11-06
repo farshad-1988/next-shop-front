@@ -6,6 +6,10 @@ export const useProductsItem = create<ProductsItemStore>()(
   persist(
     (set) => ({
       products: [],
+      productSearch: "",
+      pagination: false,
+      setPagination: (pagination: boolean) => set({ pagination }),
+      setProductSearch: (productSearch: string) => set({ productSearch }),
       setProducts: (products) => set({ products }),
       filteredProducts: [],
       setFilteredProducts: (filteredProducts) => set({ filteredProducts }),
@@ -43,6 +47,7 @@ export const useProductsItem = create<ProductsItemStore>()(
     }),
     {
       name: "products-storage", // key for localStorage
+      partialize: (state) => ({ products: state.products }),
     }
   )
 );

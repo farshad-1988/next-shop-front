@@ -41,6 +41,7 @@ import Link from "next/link";
 
 import { SnackbarSeverityEnum } from "../types/types";
 import { useSnackbar } from "../(store)/useSnackbarStore";
+import ClearIcon from "@mui/icons-material/Clear";
 
 /**
  * Header Component
@@ -66,6 +67,8 @@ import { useSnackbar } from "../(store)/useSnackbarStore";
  * @returns {JSX.Element} Rendered header component
  */
 const Header = (): JSX.Element => {
+  const { setProductSearch, setPagination } = useProductsItem();
+  const [searchText, setSearchText] = useState<string>("");
   const { showSnackbar } = useSnackbar();
   const theme = useTheme();
   const { data: session, status } = useSession();
@@ -75,7 +78,6 @@ const Header = (): JSX.Element => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const { orders } = useOrdersItem();
-  const { products, setFilteredProducts } = useProductsItem();
 
   /** Determines if current route is within admin section */
   const isAdmin = pathname.startsWith("/admin");
@@ -158,27 +160,9 @@ const Header = (): JSX.Element => {
    *
    * @param {React.ChangeEvent<HTMLInputElement>} e - Input change event
    */
-  const handleSearchProducts = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const query = e.target.value.toLowerCase().trim();
-
-      if (!query) {
-        setFilteredProducts(products);
-        return;
-      }
-
-      const filtered = products.filter((product) => {
-        const nameMatch = product.name.toLowerCase().includes(query);
-        const descriptionMatch = product.description
-          .toLowerCase()
-          .includes(query);
-        return nameMatch || descriptionMatch;
-      });
-
-      setFilteredProducts(filtered);
-    },
-    [products, setFilteredProducts]
-  );
+  const handleSearchProducts = useCallback(async () => {
+    setProductSearch(searchText);
+  }, [searchText, setProductSearch]);
 
   /**
    * Renders the brand logo
@@ -232,46 +216,85 @@ const Header = (): JSX.Element => {
   /**
    * Renders the search bar component
    */
+
   const renderSearchBar = (): JSX.Element => (
-    <Paper
-      elevation={0}
-      sx={{
-        p: "6px 12px",
-        display: "flex",
-        alignItems: "center",
-        width: { xs: "100%", md: 400 },
-        maxWidth: 500,
-        borderRadius: 3,
-        border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-        backgroundColor: alpha(theme.palette.background.default, 0.6),
-        backdropFilter: "blur(8px)",
-        transition: "all 0.3s ease",
-        "&:hover": {
-          borderColor: alpha(theme.palette.primary.main, 0.3),
-          backgroundColor: alpha(theme.palette.background.default, 0.9),
-        },
-        "&:focus-within": {
-          borderColor: theme.palette.primary.main,
-          backgroundColor: theme.palette.background.paper,
-          boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.1)}`,
-        },
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        setPagination(false);
+        setProductSearch(searchText);
+        handleSearchProducts();
       }}
+      style={{ width: "100%", maxWidth: 500 }}
     >
-      <SearchIcon sx={{ color: "text.secondary", fontSize: 22 }} />
-      <InputBase
+      <Paper
+        elevation={0}
         sx={{
-          ml: 1.5,
-          flex: 1,
-          fontSize: "0.95rem",
-          "& input::placeholder": {
-            opacity: 0.7,
+          p: "6px 12px",
+          display: "flex",
+          alignItems: "center",
+          borderRadius: 3,
+          border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+          backgroundColor: alpha(theme.palette.background.default, 0.6),
+          backdropFilter: "blur(8px)",
+          transition: "all 0.3s ease",
+          "&:hover": {
+            borderColor: alpha(theme.palette.primary.main, 0.3),
+            backgroundColor: alpha(theme.palette.background.default, 0.9),
+          },
+          "&:focus-within": {
+            borderColor: theme.palette.primary.main,
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: `0 0 0 3px ${alpha(theme.palette.primary.main, 0.1)}`,
           },
         }}
-        placeholder="Search products..."
-        inputProps={{ "aria-label": "search products" }}
-        onChange={handleSearchProducts}
-      />
-    </Paper>
+      >
+        <InputBase
+          sx={{
+            ml: 1,
+            flex: 1,
+            fontSize: "0.95rem",
+            "& input::placeholder": {
+              opacity: 0.7,
+            },
+          }}
+          placeholder="Search products..."
+          inputProps={{ "aria-label": "search products" }}
+          value={searchText}
+          onChange={(e) => {
+            if (e.target.value === "") {
+              setProductSearch("");
+              setPagination(false);
+            }
+            setSearchText(e.target.value);
+          }}
+          endAdornment={
+            <>
+              {searchText && (
+                <IconButton
+                  size="small"
+                  onClick={() => {
+                    setProductSearch("");
+                    setSearchText("");
+                  }}
+                  aria-label="clear search"
+                  sx={{ mr: 1 }}
+                >
+                  <ClearIcon fontSize="small" />
+                </IconButton>
+              )}
+            </>
+          }
+        />
+        <IconButton
+          type="submit"
+          aria-label="search"
+          sx={{ color: "text.secondary" }}
+        >
+          <SearchIcon />
+        </IconButton>
+      </Paper>
+    </form>
   );
 
   /**

@@ -24,14 +24,19 @@ import syncOrders from "@/lib/syncOrders";
 
 const ShowItems = () => {
   const { data: session, status } = useSession();
-  const { setProducts, filteredProducts, setFilteredProducts } =
-    useProductsItem();
+  const {
+    setProducts,
+    filteredProducts,
+    setFilteredProducts,
+    productSearch,
+    pagination,
+    setPagination,
+  } = useProductsItem();
 
   const { setUser } = useUserStore();
   const { setOrders } = useOrdersItem();
   const uid = session?.user?.id;
   const [page, setPage] = useState(5);
-  const [showPagination, setShowPagination] = useState(false);
 
   const {
     //data will be {pages:Array of all fetched pages , pageParams: Array of page params used for each page}
@@ -43,9 +48,11 @@ const ShowItems = () => {
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["products"],
+    queryKey: ["products", productSearch],
     queryFn: async ({ pageParam = 1 }) => {
-      const res = await fetch(`/api/products?_page=${pageParam}&_limit=6`);
+      const res = await fetch(
+        `/api/products?_page=${pageParam}&_limit=6&_search=${productSearch}`
+      );
       const { products, total } = await res.json();
       return { products, total, page: pageParam };
     },
@@ -70,12 +77,12 @@ const ShowItems = () => {
   useEffect(() => {
     if (productsData?.pages) {
       const allProducts = productsData.pages.flatMap((p) => p.products);
-      if (!showPagination) {
+      if (!pagination) {
         setProducts(allProducts);
         setFilteredProducts(allProducts);
       }
     }
-  }, [productsData, showPagination, setProducts, setFilteredProducts]);
+  }, [productsData, pagination, setProducts, setFilteredProducts]);
 
   // Page-based fetching when in pagination mode
   const { isLoading: isPageLoading } = useQuery({
@@ -87,7 +94,7 @@ const ShowItems = () => {
       setFilteredProducts(products);
       return { products };
     },
-    enabled: showPagination,
+    enabled: pagination,
   });
 
   const {
@@ -121,7 +128,7 @@ const ShowItems = () => {
 
   // Handle scroll event (infinite mode only)
   const handleScroll = useCallback(() => {
-    if (showPagination) return;
+    if (pagination) return;
     // Calculate if user is near bottom of page
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
     const scrollHeight = document.documentElement.scrollHeight;
@@ -133,7 +140,7 @@ const ShowItems = () => {
 
     if (
       isNearBottom &&
-      !showPagination &&
+      !pagination &&
       loadedProducts < 30 &&
       hasNextPage &&
       !isFetchingNextPage
@@ -141,11 +148,12 @@ const ShowItems = () => {
       fetchNextPage();
     }
   }, [
-    showPagination,
+    pagination,
     loadedProducts,
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
+    productSearch,
   ]);
 
   // Add scroll event listener
@@ -222,8 +230,8 @@ const ShowItems = () => {
 
   // Determine loading state based on authentication
   const isLoading = uid
-    ? (showPagination ? isPageLoading : isProductsLoading) || isOrdersLoading
-    : showPagination
+    ? (pagination ? isPageLoading : isProductsLoading) || isOrdersLoading
+    : pagination
     ? isPageLoading
     : isProductsLoading;
 
@@ -242,7 +250,7 @@ const ShowItems = () => {
       </Grid>
 
       {/* Loading indicator when fetching more products (infinite mode) */}
-      {!showPagination && isFetchingNextPage && (
+      {!pagination && isFetchingNextPage && (
         <Box sx={{ width: "100%", py: 4, textAlign: "center" }}>
           <CircularProgress size={40} />
         </Box>
@@ -256,7 +264,7 @@ const ShowItems = () => {
             count={Math.max(1, Math.ceil((latestTotal || 0) / 6))}
             page={page}
             onChange={(_, value) => {
-              setShowPagination(true);
+              setPagination(true);
               setPage(value);
             }}
           />

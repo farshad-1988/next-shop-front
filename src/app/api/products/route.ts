@@ -4,12 +4,20 @@ import { readData, writeData, getNextId, Product } from "@/lib/data";
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
+    const searchText = searchParams.get("_search");
     const page = searchParams.get("_page");
     const limit = searchParams.get("_limit");
 
     const data = await readData();
-    const products = data.products;
+    let products = data.products;
     let sliceProducts: Product[] = [];
+
+    if (searchText) {
+      const lowerSearchText = searchText.toLowerCase();
+      products = products.filter((product) =>
+        product.name.toLowerCase().includes(lowerSearchText)
+      );
+    }
 
     // Handle pagination if provided
     if (page && limit) {
@@ -18,6 +26,8 @@ export async function GET(request: NextRequest) {
       const startIndex = (pageNum - 1) * limitNum;
       const endIndex = startIndex + limitNum;
       sliceProducts = products.slice(startIndex, endIndex);
+    } else {
+      sliceProducts = products;
     }
     return NextResponse.json({
       products: sliceProducts,
