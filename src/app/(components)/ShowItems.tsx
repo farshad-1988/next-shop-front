@@ -20,6 +20,7 @@ import Grow from "@mui/material/Grow";
 import { useSession } from "next-auth/react";
 
 import { useUserStore } from "../(store)/useUserStore";
+import syncOrders from "@/lib/syncOrders";
 
 const ShowItems = () => {
   const { data: session, status } = useSession();
@@ -98,9 +99,21 @@ const ShowItems = () => {
     queryFn: async () => {
       const res = await fetch(`/api/users/${uid}`);
       const userData = await res.json();
+      const dbOrders = userData.orders || [];
+      const localOrders = useOrdersItem.getState().orders || [];
 
+      if (JSON.stringify(dbOrders) !== JSON.stringify(localOrders)) {
+        const merged = await syncOrders({
+          localOrders,
+          dbOrders,
+          user: userData,
+        });
+        setOrders(merged);
+        return merged;
+      } else {
+        setOrders(userData.orders || []);
+      }
       setUser(userData || null);
-      setOrders(userData.orders || []);
       return userData.orders;
     },
     enabled: !!uid,

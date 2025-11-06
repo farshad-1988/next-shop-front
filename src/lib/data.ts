@@ -104,7 +104,7 @@ export async function writeData(data: DataStore): Promise<void> {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "X-Master-Key": MASTER_API_KEY,
+        "X-Master-Key": jsonbinApiKey,
       },
       body: JSON.stringify(data),
     });

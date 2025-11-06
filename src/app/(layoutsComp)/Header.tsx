@@ -148,6 +148,7 @@ const Header = (): JSX.Element => {
    */
   const handleLogout = useCallback(async () => {
     await signOut({ callbackUrl: "/" });
+    useOrdersItem.persist.clearStorage();
     closeMobileMenu();
   }, [closeMobileMenu]);
 

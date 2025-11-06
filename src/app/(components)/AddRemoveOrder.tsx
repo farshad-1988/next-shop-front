@@ -27,6 +27,7 @@ const AddProductComp = ({ item }: { item: Item }): JSX.Element => {
   const addProduct = useMutation({
     // mutationKey: ["products"],
     mutationFn: async (item: Item) => {
+      if (!uid) return;
       try {
         // 1. Fetch product details
         const resP = await fetch(`/api/products/${item.id}`);
@@ -84,8 +85,6 @@ const AddProductComp = ({ item }: { item: Item }): JSX.Element => {
         throw new Error(err.message || "Unexpected error while adding product");
       }
     },
-
-    // 5. Handle mutation lifecycle
     onSuccess: () => {
       increaseItem();
     },
@@ -100,6 +99,8 @@ const AddProductComp = ({ item }: { item: Item }): JSX.Element => {
 
   const decreaseProduct = useMutation({
     mutationFn: async (item: Item) => {
+      if (!uid) return;
+
       const id = item.id;
       const currentCount = orders.find((ord) => ord.id === id)?.count || 0;
 
