@@ -1,7 +1,9 @@
-import fs from "fs";
-import path from "path";
-
-const dataFilePath = path.join(process.cwd(), "data.json");
+// lib/db.ts
+const BIN_ID = process.env.JSONBIN_ID || "binId";
+const API_KEY = process.env.JSONBIN_API_KEY || "apiKey";
+const MASTER_API_KEY =
+  "$2a$10$QXn4VcHVS96/zlYdlUwsVOIZr7YxyhFqCsxhpa7TaK6uwlo4NEh9u";
+const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 export interface Product {
   id: number;
@@ -53,12 +55,32 @@ export interface DataStore {
   soldProducts: SoldProduct[];
 }
 
-export function readData(): DataStore {
+/**
+ * Read data from JSONBin
+ */
+export async function readData(): Promise<DataStore> {
   try {
-    const fileContents = fs.readFileSync(dataFilePath, "utf8");
-    return JSON.parse(fileContents);
+    if (!MASTER_API_KEY) {
+      throw new Error("Master API key is not set");
+    }
+    console.log(MASTER_API_KEY, BASE_URL);
+    const res = await fetch(`${BASE_URL}/latest`, {
+      method: "GET",
+      headers: {
+        "X-Master-Key": MASTER_API_KEY,
+      },
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Response error:", errorText);
+      throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
+    }
+
+    const json = await res.json();
+    return json.record as DataStore;
   } catch (error) {
-    // If file doesn't exist or is invalid, return default structure
+    console.error("readData error:", error);
     return {
       products: [],
       users: [],
@@ -67,10 +89,38 @@ export function readData(): DataStore {
   }
 }
 
-export function writeData(data: DataStore): void {
-  fs.writeFileSync(dataFilePath, JSON.stringify(data, null, 2), "utf8");
+/**
+ * Write data to JSONBin
+ */
+export async function writeData(data: DataStore): Promise<void> {
+  try {
+    if (!MASTER_API_KEY) {
+      throw new Error("Master API key is not set");
+    }
+
+    const res = await fetch(BASE_URL, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": MASTER_API_KEY,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error("Response error:", errorText);
+      throw new Error(`Failed to write data: ${res.status} ${res.statusText}`);
+    }
+  } catch (error) {
+    console.error("writeData error:", error);
+    throw error; // Re-throw to handle upstream
+  }
 }
 
+/**
+ * Utility for auto-increment ID
+ */
 export function getNextId(items: { id: number }[]): number {
   if (items.length === 0) return 1;
   return Math.max(...items.map((item) => item.id)) + 1;

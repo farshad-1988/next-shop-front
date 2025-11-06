@@ -3,7 +3,7 @@ import { readData, writeData, getNextId, SoldProduct } from "@/lib/data";
 
 export async function GET(request: NextRequest) {
   try {
-    const data = readData();
+    const data = await readData();
     return NextResponse.json(data.soldProducts);
   } catch (error) {
     return NextResponse.json(
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body: Omit<SoldProduct, "id"> = await request.json();
-    const data = readData();
+    const data = await readData();
 
     const newSoldProduct: SoldProduct = {
       id: getNextId(data.soldProducts),

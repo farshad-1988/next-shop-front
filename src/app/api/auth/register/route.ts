@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already exists
-    const data = readData();
+    const data = await readData();
     const existingUsers = data.users.filter((u) => u.email === email);
 
     if (existingUsers.length > 0) {

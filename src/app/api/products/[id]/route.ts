@@ -7,14 +7,11 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const data = readData();
+    const data = await readData();
     const product = data.products.find((p) => p.id === parseInt(id));
 
     if (!product) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     return NextResponse.json(product);
@@ -33,14 +30,11 @@ export async function PUT(
   try {
     const { id } = await params;
     const body: Product = await request.json();
-    const data = readData();
+    const data = await readData();
 
     const index = data.products.findIndex((p) => p.id === parseInt(id));
     if (index === -1) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     const updatedProduct: Product = {
@@ -67,14 +61,11 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const data = readData();
+    const data = await readData();
 
     const index = data.products.findIndex((p) => p.id === parseInt(id));
     if (index === -1) {
-      return NextResponse.json(
-        { error: "Product not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
     data.products.splice(index, 1);

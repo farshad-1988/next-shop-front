@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
     const page = searchParams.get("_page");
     const limit = searchParams.get("_limit");
 
-    const data = readData();
+    const data = await readData();
     const products = data.products;
     let sliceProducts: Product[] = [];
 
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body: Omit<Product, "id"> = await request.json();
-    const data = readData();
+    const data = await readData();
 
     const newProduct: Product = {
       id: getNextId(data.products),
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       updatedAt: body.updatedAt || new Date().toISOString(),
     };
 
-    data.products.push(newProduct);
+    data.products.unshift(newProduct);
     writeData(data);
 
     return NextResponse.json(newProduct, { status: 201 });

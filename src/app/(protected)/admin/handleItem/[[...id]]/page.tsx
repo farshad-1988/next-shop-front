@@ -77,9 +77,7 @@ export default function HandleItemPage({
     mutationFn: async (data: ProductFormData) => {
       if (!session || session.user.role !== UserRole.ADMIN)
         throw new Error("you are not authorized");
-      const endpoint = id
-        ? `/api/products/${id}`
-        : "/api/products";
+      const endpoint = id ? `/api/products/${id}` : "/api/products";
 
       const method = id ? "PUT" : "POST";
 
@@ -199,9 +197,9 @@ export default function HandleItemPage({
               label="Product Name"
               rules={{
                 pattern: {
-                  value: /^[\p{L}\p{N}\p{Zs}\-_\.,]*$/gmu,
+                  value: /^[^<>{}[\]\\;`|]*$/,
                   message:
-                    "Only letters, numbers, spaces, dots, commas, dashes, and underscores are permitted.",
+                    "Special characters like <, >, {, }, [, ], \\, ;, `, | are not allowed.",
                 },
               }}
               required
@@ -307,9 +305,9 @@ export default function HandleItemPage({
               fullWidth
               rules={{
                 pattern: {
-                  value: /^[\p{L}\p{N}\p{Zs}\-_\.,]*$/gmu,
+                  value: /^[^<>{}[\]\\;`|]*$/,
                   message:
-                    "Only letters, numbers, spaces, dots, commas, dashes, and underscores are permitted.",
+                    "Special characters like <, >, {, }, [, ], \\, ;, `, | are not allowed.",
                 },
               }}
               sx={{

@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const data = readData();
+    const data = await readData();
     const user = data.users.find((u) => u.id == id);
 
     if (!user) {
@@ -32,7 +32,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body: Partial<User> = await request.json();
-    const data = readData();
+    const data = await readData();
 
     const index = data.users.findIndex((u) => u.id === id);
     if (index === -1) {
@@ -66,7 +66,7 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body: Partial<User> = await request.json();
-    const data = readData();
+    const data = await readData();
 
     const index = data.users.findIndex((u) => u.id == id);
     if (index === -1) {

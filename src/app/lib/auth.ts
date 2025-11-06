@@ -19,7 +19,7 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         // Fetch user by email from data file
-        const data = readData();
+        const data = await readData();
         const users = data.users.filter((u) => u.email === credentials.email);
 
         const user = users[0] as DbUser | undefined;

@@ -24,27 +24,15 @@
       "rating": 4.7
     },
     {
-      "id": 3,
-      "createdAt": "2025-11-02T09:00:00.000Z",
-      "updatedAt": "2025-11-02T09:00:00.000Z",
-      "name": "Stainless Steel Water Bottle",
-      "price": 24.5,
-      "category": "Lifestyle",
-      "stock": 120,
-      "description": "Insulated bottle keeps drinks cold for 24h or hot for 12h.",
-      "imageUrl": "https://picsum.photos/id/35/400/300",
-      "rating": 4.8
-    },
-    {
-      "id": 4,
-      "createdAt": "2025-10-29T14:22:11.888Z",
-      "updatedAt": "2025-10-29T14:22:11.888Z",
-      "name": "Professional Chef's Knife Set",
-      "price": 149.99,
+      "createdAt": "2025-11-06T09:43:02.776Z",
+      "updatedAt": "2025-11-06T09:43:27.819Z",
+      "name": "Professional Chefs Knife Se",
+      "price": "149.99",
       "category": "Kitchenware",
-      "stock": 45,
+      "stock": "45",
       "description": "8-piece knife set with German steel blades and ergonomic handles.",
-      "image": "https://picsum.photos/id/1080/400/300"
+      "image": "https://picsum.photos/id/1080/400/300",
+      "id": 4
     },
     {
       "id": 5,

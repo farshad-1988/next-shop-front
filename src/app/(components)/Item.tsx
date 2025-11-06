@@ -1,16 +1,28 @@
-import { Box, Card, Typography, IconButton, alpha } from "@mui/material";
-import React, { JSX } from "react";
+import {
+  Box,
+  Card,
+  Typography,
+  IconButton,
+  alpha,
+  CircularProgress,
+} from "@mui/material";
+import React, { JSX, use } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import AddProductComp from "./AddRemoveOrder";
-import { Item, UserRole } from "../types/types";
+import { Item, SnackbarSeverityEnum, UserRole } from "../types/types";
 import ImageComp from "../(customMuiComp)/ImageComp";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { useProductsItem } from "../(store)/useProductsStore";
+import { useSnackbar } from "../(store)/useSnackbarStore";
 
 const ItemComp = ({ item }: { item: Item }): JSX.Element => {
   const { data: session } = useSession();
+  const { showSnackbar } = useSnackbar();
+  const { setProducts, products, setFilteredProducts } = useProductsItem();
   const router = useRouter();
   const userRole = session?.user.role;
 
@@ -34,12 +46,24 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
       },
     });
     if (res.ok) {
-      alert("Item removed successfully");
-      window.location.reload();
+      showSnackbar("Item removed successfully", SnackbarSeverityEnum.Success);
+      return id;
     } else {
       alert("Error removing item");
     }
   };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: removeItem,
+    onSuccess: () => {
+      setProducts(products.filter((prod) => prod.id !== item.id));
+      setFilteredProducts(products.filter((prod) => prod.id !== item.id));
+    },
+    onError: (error) => {
+      alert("Error removing item");
+      console.error(error);
+    },
+  });
 
   return (
     <Box key={item.id} sx={{ width: 400, padding: "20px" }}>
@@ -56,6 +80,8 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
         {userRole === "admin" && (
           <Box
             sx={{
+              opacity: isPending ? 0.6 : 1,
+              pointerEvents: isPending ? "none" : "auto",
               position: "absolute",
               top: 12,
               right: 12,
@@ -75,6 +101,7 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
             }}
           >
             <IconButton
+              disabled={isPending}
               onClick={() => editItem(item.id)}
               size="small"
               color="primary"
@@ -90,7 +117,8 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
               <EditIcon fontSize="small" />
             </IconButton>
             <IconButton
-              onClick={() => removeItem(item.id)}
+              disabled={isPending}
+              onClick={() => mutate(item.id)}
               size="small"
               color="error"
               sx={{
@@ -102,14 +130,26 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
               }}
               aria-label="delete item"
             >
-              <DeleteIcon fontSize="small" />
+              {isPending ? (
+                <CircularProgress size={20} color="error" />
+              ) : (
+                <DeleteIcon fontSize="small" />
+              )}
             </IconButton>
           </Box>
         )}
 
         <ImageComp item={item} />
         <Typography variant={"h6"}>{item.name}</Typography>
-        <Typography>{item.description}</Typography>
+        <Typography
+          sx={{
+            width: "100%",
+            minHeight: "3em", // Takes space for 2 lines (assuming ~1.5 line height)
+            lineHeight: 1.5,
+          }}
+        >
+          {item.description}
+        </Typography>
         <Card
           sx={{
             display: "flex",

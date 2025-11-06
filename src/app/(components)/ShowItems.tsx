@@ -29,7 +29,6 @@ const ShowItems = () => {
   const { setUser } = useUserStore();
   const { setOrders } = useOrdersItem();
   const uid = session?.user?.id;
-
   const [page, setPage] = useState(5);
   const [showPagination, setShowPagination] = useState(false);
 
@@ -225,7 +224,7 @@ const ShowItems = () => {
     <>
       <Grid container marginX={3}>
         {filteredProducts?.map((item) => (
-          <ItemComp key={item.id} item={item} />
+          <ItemComp key={item.id + "something"} item={item} />
         ))}
       </Grid>
 

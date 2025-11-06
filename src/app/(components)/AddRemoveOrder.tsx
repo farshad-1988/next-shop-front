@@ -1,4 +1,4 @@
-import { Button, Typography } from "@mui/material";
+import { Button, Typography, CircularProgress } from "@mui/material";
 import { JSX } from "react";
 
 import { useOrdersItem } from "../(store)/useOrdersStores";
@@ -154,8 +154,13 @@ const AddProductComp = ({ item }: { item: Item }): JSX.Element => {
             onClick={() => {
               decreaseProduct.mutate(item);
             }}
+            disabled={decreaseProduct.isPending || addProduct.isPending}
           >
-            -
+            {decreaseProduct.isPending ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "-"
+            )}
           </Button>
           <Typography>
             {orders.find((ord) => ord.id === item.id)?.count}
@@ -167,8 +172,13 @@ const AddProductComp = ({ item }: { item: Item }): JSX.Element => {
             onClick={() => {
               addProduct.mutate(item);
             }}
+            disabled={addProduct.isPending || decreaseProduct.isPending}
           >
-            +
+            {addProduct.isPending ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              "+"
+            )}
           </Button>
         </CenteredCard>
       ) : (
@@ -178,8 +188,13 @@ const AddProductComp = ({ item }: { item: Item }): JSX.Element => {
           onClick={() => {
             addProduct.mutate(item);
           }}
+          disabled={addProduct.isPending}
         >
-          Add to Cart
+          {addProduct.isPending ? (
+            <CircularProgress size={20} color="inherit" />
+          ) : (
+            "Add to Cart"
+          )}
         </Button>
       )}
     </div>
