@@ -1,8 +1,7 @@
 // lib/db.ts
 const BIN_ID = process.env.JSONBIN_ID || "binId";
 const API_KEY = process.env.JSONBIN_API_KEY || "apiKey";
-const MASTER_API_KEY =
-  "$2a$10$QXn4VcHVS96/zlYdlUwsVOIZr7YxyhFqCsxhpa7TaK6uwlo4NEh9u";
+const MASTER_API_KEY = process.env.JSONBIN_MASTER_API_KEY || "masterKey";
 const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 export interface Product {
@@ -63,7 +62,7 @@ export async function readData(): Promise<DataStore> {
     if (!MASTER_API_KEY) {
       throw new Error("Master API key is not set");
     }
-    console.log(MASTER_API_KEY, BASE_URL);
+
     const res = await fetch(`${BASE_URL}/latest`, {
       method: "GET",
       headers: {
