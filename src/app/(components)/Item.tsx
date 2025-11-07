@@ -49,7 +49,11 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
       showSnackbar("Item removed successfully", SnackbarSeverityEnum.Success);
       return id;
     } else {
-      alert("Error removing item");
+      showSnackbar(
+        `Failed to remove item (${res.status})`,
+        SnackbarSeverityEnum.Error
+      );
+      throw new Error(`Failed to remove item (${res.status})`);
     }
   };
 
@@ -60,7 +64,7 @@ const ItemComp = ({ item }: { item: Item }): JSX.Element => {
       setFilteredProducts(products.filter((prod) => prod.id !== item.id));
     },
     onError: (error) => {
-      alert("Error removing item");
+      showSnackbar(`Error removing item`, SnackbarSeverityEnum.Error);
       console.error(error);
     },
   });

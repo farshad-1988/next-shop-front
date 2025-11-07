@@ -19,6 +19,8 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CartItemComp from "../(components)/CartItem";
+import { useSnackbar } from "../(store)/useSnackbarStore";
+import { SnackbarSeverityEnum } from "../types/types";
 
 interface Product {
   id: number;
@@ -75,6 +77,7 @@ interface CompletePurchaseResponse {
 const API_BASE_URL = "/api";
 
 export default function CartPage() {
+  const { showSnackbar } = useSnackbar();
   const router = useRouter();
   const { setOrders } = useOrdersItem();
   const { data: session, status } = useSession();
@@ -348,13 +351,17 @@ export default function CartPage() {
                   onPurchase.mutate(session?.user.id, {
                     onSuccess: (data) => {
                       console.log("Purchase completed!", data);
-                      alert(
-                        `Successfully purchased ${data.soldProducts.length} items!`
+                      showSnackbar(
+                        `Successfully purchased ${data.soldProducts.length} items!`,
+                        SnackbarSeverityEnum.Success
                       );
                     },
                     onError: (error) => {
                       console.error("Error:", error);
-                      alert("Failed to complete purchase");
+                      showSnackbar(
+                        `Purchase failed: ${error.message}`,
+                        SnackbarSeverityEnum.Error
+                      );
                     },
                   })
                 }
