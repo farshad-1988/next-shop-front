@@ -25,7 +25,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
-interface PurchasedItem {
+interface PurchaseItem {
   id: number;
   name: string;
   updatedAt?: string;
@@ -37,7 +37,12 @@ interface PurchasedItem {
   description: string;
   image?: string;
   count: number;
+}
+
+interface Purchase {
+  purchaseId: string;
   purchasedAt: string;
+  items: PurchaseItem[];
 }
 
 interface User {
@@ -45,7 +50,7 @@ interface User {
   email: string;
   name: string;
   createdAt?: string;
-  purchasedItems?: PurchasedItem[];
+  purchasedItems?: Purchase[];
 }
 
 export default function PurchasesPage() {
@@ -96,10 +101,20 @@ export default function PurchasesPage() {
     );
   }
 
-  const purchasedItems = userData?.purchasedItems || [];
-  const totalItems = purchasedItems.reduce((sum, item) => sum + item.count, 0);
-  const totalSpent = purchasedItems.reduce(
-    (sum, item) => sum + item.price * item.count,
+  const purchases = userData?.purchasedItems || [];
+  const totalOrders = purchases.length;
+  const totalItems = purchases.reduce(
+    (sum, purchase) =>
+      sum + purchase.items.reduce((itemSum, item) => itemSum + item.count, 0),
+    0
+  );
+  const totalSpent = purchases.reduce(
+    (sum, purchase) =>
+      sum +
+      purchase.items.reduce(
+        (itemSum, item) => itemSum + Number(item.price) * item.count,
+        0
+      ),
     0
   );
 
@@ -210,7 +225,7 @@ export default function PurchasesPage() {
                 sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 1 }}
               />
               <Typography variant="h4" fontWeight="bold" color="primary">
-                {purchasedItems.length}
+                {totalOrders}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Total Orders
@@ -278,15 +293,15 @@ export default function PurchasesPage() {
           Purchase History
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          {purchasedItems.length === 0
+          {purchases.length === 0
             ? "You haven't made any purchases yet."
-            : `You have ${purchasedItems.length} purchase${
-                purchasedItems.length > 1 ? "s" : ""
+            : `You have ${purchases.length} purchase${
+                purchases.length > 1 ? "s" : ""
               } in your history.`}
         </Typography>
       </Box>
 
-      {purchasedItems.length === 0 ? (
+      {purchases.length === 0 ? (
         <Paper
           elevation={2}
           sx={{
@@ -307,116 +322,154 @@ export default function PurchasesPage() {
           </Typography>
         </Paper>
       ) : (
-        <Grid container spacing={3}>
-          {purchasedItems.map((item) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              key={`${item.id}-${item.purchasedAt}`}
-              {...({} as any)}
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          {purchases.map((purchase) => (
+            <Paper
+              key={purchase.purchaseId}
+              elevation={3}
+              sx={{
+                p: 3,
+                borderRadius: 3,
+                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+              }}
             >
-              <Card
-                elevation={3}
+              <Box
                 sx={{
-                  height: "100%",
                   display: "flex",
-                  flexDirection: "column",
-                  borderRadius: 3,
-                  overflow: "hidden",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: 6,
-                  },
-                  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3,
                 }}
               >
-                <Box sx={{ position: "relative" }}>
-                  <ImageComp item={item} />
-                  <Chip
-                    label={`Qty: ${item.count}`}
-                    color="primary"
-                    size="small"
-                    sx={{
-                      position: "absolute",
-                      top: 8,
-                      right: 8,
-                      fontWeight: "bold",
-                      boxShadow: 2,
-                    }}
-                  />
-                </Box>
-                <CardContent
-                  sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
-                >
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    {item.name}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                      mb: 2,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {item.description}
+                <Box>
+                  <Typography variant="h6" fontWeight="bold">
+                    Order #{purchase.purchaseId}
                   </Typography>
                   <Box
                     sx={{
-                      mt: "auto",
-                      pt: 2,
-                      borderTop: `1px solid ${alpha(
-                        theme.palette.divider,
-                        0.5
-                      )}`,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5,
+                      mt: 0.5,
                     }}
                   >
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        mb: 1,
-                      }}
-                    >
-                      <Typography
-                        variant="h6"
-                        color="primary"
-                        fontWeight="bold"
-                      >
-                        ${(item.price * item.count).toFixed(2)}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        ${(+item.price).toFixed(2)} each
-                      </Typography>
-                    </Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 0.5,
-                        mt: 1,
-                      }}
-                    >
-                      <CalendarTodayIcon
-                        sx={{ fontSize: 16, color: "text.secondary" }}
-                      />
-                      <Typography variant="caption" color="text.secondary">
-                        Purchased: {formatDate(item.purchasedAt)}
-                      </Typography>
-                    </Box>
+                    <CalendarTodayIcon
+                      sx={{ fontSize: 16, color: "text.secondary" }}
+                    />
+                    <Typography variant="body2" color="text.secondary">
+                      {formatDate(purchase.purchasedAt)}
+                    </Typography>
                   </Box>
-                </CardContent>
-              </Card>
-            </Grid>
+                </Box>
+                <Chip
+                  label={`${purchase.items.length} item${
+                    purchase.items.length > 1 ? "s" : ""
+                  }`}
+                  color="primary"
+                  variant="outlined"
+                />
+              </Box>
+
+              <Grid container spacing={3}>
+                {purchase.items.map((item) => (
+                  <Grid
+                    item
+                    xs={12}
+                    sm={6}
+                    md={4}
+                    key={`${purchase.purchaseId}-${item.id}`}
+                    {...({} as any)}
+                  >
+                    <Card
+                      elevation={2}
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        transition: "all 0.3s ease",
+                        "&:hover": {
+                          transform: "translateY(-4px)",
+                          boxShadow: 4,
+                        },
+                      }}
+                    >
+                      <Box sx={{ position: "relative" }}>
+                        <ImageComp item={item} />
+                        <Chip
+                          label={`Qty: ${item.count}`}
+                          color="primary"
+                          size="small"
+                          sx={{
+                            position: "absolute",
+                            top: 8,
+                            right: 8,
+                            fontWeight: "bold",
+                            boxShadow: 2,
+                          }}
+                        />
+                      </Box>
+                      <CardContent
+                        sx={{
+                          flexGrow: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                        }}
+                      >
+                        <Typography variant="h6" fontWeight="bold" gutterBottom>
+                          {item.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            mb: 2,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
+                        >
+                          {item.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            mt: "auto",
+                            pt: 2,
+                            borderTop: `1px solid ${alpha(
+                              theme.palette.divider,
+                              0.5
+                            )}`,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography
+                              variant="h6"
+                              color="primary"
+                              fontWeight="bold"
+                            >
+                              ${(Number(item.price) * item.count).toFixed(2)}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              ${Number(item.price).toFixed(2)} each
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Paper>
           ))}
-        </Grid>
+        </Box>
       )}
     </Container>
   );

@@ -153,7 +153,6 @@ const ShowItems = () => {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    productSearch,
   ]);
 
   // Add scroll event listener

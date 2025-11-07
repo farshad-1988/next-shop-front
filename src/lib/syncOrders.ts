@@ -17,7 +17,7 @@ async function syncOrders({
   localOrders.forEach((local) => {
     const existing = merged.find((p) => p.id === local.id);
     if (existing) {
-      existing.count += local.count; // or Math.max(existing.stock, local.stock)
+      existing.count += local.count;
     } else {
       merged.push(local);
     }

@@ -38,9 +38,11 @@ interface OrderItem extends Product {
   count: number;
 }
 
-interface PurchasedItem extends Product {
-  count: number;
+// Represents one complete purchase group
+interface PurchasedItems {
+  purchaseId: string; // keep it string, not number
   purchasedAt: string;
+  items: OrderItem[];
 }
 
 interface User {
@@ -50,23 +52,24 @@ interface User {
   password?: string;
   createdAt?: string;
   orders?: OrderItem[];
-  purchasedItems?: PurchasedItem[];
+  purchasedItems?: PurchasedItems[]; // must be array
 }
 
 interface SoldProduct {
   id: number;
-  productId: number;
   productName: string;
   quantity: number;
   totalAmount: number;
   soldAt: string;
   userId: string;
   userName: string;
+  purchaseId: string;
 }
 
 interface CompletePurchaseResponse {
   user: User;
   soldProducts: SoldProduct[];
+  purchaseId: string;
 }
 
 const API_BASE_URL = "/api";
@@ -81,80 +84,63 @@ export default function CartPage() {
     userId: string
   ): Promise<CompletePurchaseResponse> {
     const userResponse = await fetch(`${API_BASE_URL}/users/${userId}`);
-    if (!userResponse.ok) {
-      throw new Error("Failed to fetch user");
-    }
+    if (!userResponse.ok) throw new Error("Failed to fetch user");
+
     const user: User = await userResponse.json();
-
-    if (!user.orders || user?.orders?.length === 0) {
+    if (!user.orders || user.orders.length === 0)
       throw new Error("No orders to complete");
-    }
-
-    const soldProductsResponse = await fetch(`${API_BASE_URL}/soldProducts`);
-    const existingSoldProducts: SoldProduct[] = soldProductsResponse.ok
-      ? await soldProductsResponse.json()
-      : [];
 
     const purchaseDate = new Date().toISOString();
-    const purchasedItems: PurchasedItem[] = user.purchasedItems || [];
+    const purchaseId = `purchase_${Date.now()}`;
+
     const newSoldProducts: SoldProduct[] = [];
 
-    let nextSoldProductId =
-      existingSoldProducts.length > 0
-        ? Math.max(...existingSoldProducts.map((p) => p.id)) + 1
-        : 1;
-
-    user.orders.forEach((order: OrderItem) => {
-      purchasedItems.push({
-        ...order,
-        purchasedAt: purchaseDate,
-      });
-
+    const thisPurchaseItems = user.orders.map((order: OrderItem) => {
       newSoldProducts.push({
-        id: nextSoldProductId++,
-        productId: order.id,
+        id: order.id,
         productName: order.name,
         quantity: order.count,
         totalAmount: order.price * order.count,
         soldAt: purchaseDate,
         userId: String(user.id),
         userName: user.name,
+        purchaseId,
       });
+
+      return order;
     });
+
+    // Create the new purchase record
+    const newPurchase: PurchasedItems = {
+      purchaseId,
+      purchasedAt: purchaseDate,
+      items: thisPurchaseItems,
+    };
 
     const updatedUser: User = {
       ...user,
       orders: [],
-      purchasedItems: purchasedItems,
+      purchasedItems: [...(user.purchasedItems || []), newPurchase],
     };
 
     const updateUserResponse = await fetch(`${API_BASE_URL}/users/${userId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedUser),
     });
 
-    if (!updateUserResponse.ok) {
-      throw new Error("Failed to update user");
-    }
+    if (!updateUserResponse.ok) throw new Error("Failed to update user");
 
-    await Promise.all(
-      newSoldProducts.map((soldProduct) =>
-        fetch(`${API_BASE_URL}/soldProducts`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(soldProduct),
-        })
-      )
-    );
+    await fetch(`${API_BASE_URL}/soldProducts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newSoldProducts),
+    });
 
     return {
       user: updatedUser,
       soldProducts: newSoldProducts,
+      purchaseId,
     };
   }
 
@@ -220,6 +206,7 @@ export default function CartPage() {
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#f5f5f5", py: 4 }}>
+      {onPurchase.isPending && <Loading />}
       <Grid container spacing={3} sx={{ maxWidth: 1400, mx: "auto", px: 3 }}>
         {/* Left Side - Cart Items */}
         <Grid item xs={12} md={8} {...({} as any)}>

@@ -15,22 +15,23 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: Omit<SoldProduct, "id"> = await request.json();
+    const body = (await request.json()) as SoldProduct[];
     const data = await readData();
+    const newSoldProducts: SoldProduct[] = [...data.soldProducts];
 
-    const newSoldProduct: SoldProduct = {
-      id: getNextId(data.soldProducts),
-      ...body,
-    };
-
-    data.soldProducts.push(newSoldProduct);
+    body.forEach((prod) => {
+      const existedInSold = newSoldProducts.find((sp) => sp.id === prod.id);
+      if (existedInSold) {
+        existedInSold.quantity += prod.quantity;
+      } else {
+        newSoldProducts.push(prod);
+      }
+    });
+    data.soldProducts = newSoldProducts;
     writeData(data);
 
-    return NextResponse.json(newSoldProduct, { status: 201 });
+    return NextResponse.json(newSoldProducts, { status: 201 });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to create sold product" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error }, { status: 500 });
   }
 }

@@ -66,12 +66,12 @@ const AddProductComp = ({ item }: { item: Item }): JSX.Element => {
             ord.id === id ? { ...ord, count: ord.count + 1 } : ord
           );
         }
-
+        console.log(newOrders);
         // 4. Send updated order list
         const res = await fetch(`/api/users/${uid}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orders: newOrders }),
+          body: JSON.stringify({ ...user, orders: newOrders }),
         });
 
         if (!res.ok) {

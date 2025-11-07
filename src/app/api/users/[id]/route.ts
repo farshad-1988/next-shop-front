@@ -77,7 +77,6 @@ export async function PATCH(
     const updatedUser: User = {
       ...data.users[index],
       ...body,
-      id, // Ensure ID doesn't change
     };
 
     data.users[index] = updatedUser;
